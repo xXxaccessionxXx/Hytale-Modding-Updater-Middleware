@@ -46,6 +46,18 @@ def main():
         if tag_result.returncode != 0:
             print(f"Warning: Could not create tag '{version}'. It may already exist. Error: {tag_result.stderr.strip()}")
         
+        # Compile Installer
+        import os
+        iscc_path = r"C:\Users\kasey\AppData\Local\Programs\Inno Setup 6\ISCC.exe"
+        installer_file = f"Hytale_Middleware_Setup_{version}.exe"
+        if os.path.exists(iscc_path):
+            print(f"Compiling Installer with Inno Setup...")
+            # We need to dynamically update the version in the ISS file or just leave it for now.
+            run_cmd([iscc_path, r"installer.iss"])
+        else:
+            print(f"Warning: Inno Setup command line compiler (ISCC) not found at {iscc_path}. Skipping installer build.")
+            installer_file = "middleware-agent.jar" # Fallback
+
         push_confirm = input("Push to GitHub? (y/n): ")
         if push_confirm.lower() == 'y':
             print("Pushing tags and commits to GitHub...")
@@ -57,7 +69,6 @@ def main():
                 print(f"Creating release {version}...")
                 try:
                     import shutil
-                    import os
                     gh_path = shutil.which("gh")
                     if gh_path is None and os.path.exists(r"C:\Program Files\GitHub CLI\gh.exe"):
                         gh_path = r"C:\Program Files\GitHub CLI\gh.exe"
@@ -65,9 +76,9 @@ def main():
                     if gh_path is None:
                         print("Error: GitHub CLI (gh) is not installed or not in PATH. Please install it to create releases automatically.")
                     else:
-                        run_cmd([gh_path, "release", "create", version, "--title", version, "--notes", commit_msg, "middleware-agent.jar"], check=False)
+                        run_cmd([gh_path, "release", "create", version, "--title", version, "--notes", commit_msg, installer_file], check=False)
                 except Exception as e:
-                    print(f"Warning: Could not create GitHub Release. Ensure 'gh' CLI is installed and authenticated. Error: {e}")
+                    print(f"Warning: Could not create GitHub Release. Ensure 'gh' CLI is authenticated. Error: {e}")
 
     print("Publish process complete!")
 
