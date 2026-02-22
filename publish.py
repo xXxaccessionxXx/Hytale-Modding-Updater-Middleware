@@ -41,7 +41,9 @@ def main():
     version = input("Enter the new version number (e.g., v1.1.0) or press Enter to skip tagging: ")
     if version:
         print(f"Tagging release {version}...")
-        run_cmd(["git", "tag", version])
+        tag_result = subprocess.run(["git", "tag", version], capture_output=True, text=True)
+        if tag_result.returncode != 0:
+            print(f"Warning: Could not create tag '{version}'. It may already exist. Error: {tag_result.stderr.strip()}")
         
         push_confirm = input("Push to GitHub? (y/n): ")
         if push_confirm.lower() == 'y':
