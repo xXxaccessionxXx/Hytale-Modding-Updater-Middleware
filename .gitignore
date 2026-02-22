@@ -1,0 +1,11 @@
+*.class
+agent_build/
+agent_tmp/
+target/
+*.jar
+!wrapper.jar
+
+# IDE files
+.vscode/
+.idea/
+*.iml
