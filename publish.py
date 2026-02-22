@@ -61,7 +61,7 @@ def main():
         push_confirm = input("Push to GitHub? (y/n): ")
         if push_confirm.lower() == 'y':
             print("Pushing tags and commits to GitHub...")
-            run_cmd(["git", "push", "origin", "main", "--tags"], check=False)
+            run_cmd(["git", "push", "origin", "HEAD", "--tags"], check=False)
             
             # Optionally create a GH release if GitHub CLI is installed
             publish_release = input("Create GitHub Release using GitHub CLI (gh)? (y/n): ")
