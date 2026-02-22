@@ -52,7 +52,14 @@ def main():
             publish_release = input("Create GitHub Release using GitHub CLI (gh)? (y/n): ")
             if publish_release.lower() == 'y':
                 print(f"Creating release {version}...")
-                run_cmd(["gh", "release", "create", version, "--title", version, "--notes", commit_msg, "middleware-agent.jar"], check=False)
+                try:
+                    import shutil
+                    if shutil.which("gh") is None:
+                        print("Error: GitHub CLI (gh) is not installed or not in PATH. Please install it to create releases automatically, or skip this step by doing it manually on github.com.")
+                    else:
+                        run_cmd(["gh", "release", "create", version, "--title", version, "--notes", commit_msg, "middleware-agent.jar"], check=False)
+                except Exception as e:
+                    print(f"Warning: Could not create GitHub Release. Ensure 'gh' CLI is installed. Error: {e}")
 
     print("Publish process complete!")
 
