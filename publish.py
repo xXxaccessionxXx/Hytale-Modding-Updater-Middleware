@@ -15,28 +15,29 @@ def main():
     
     # Check for uncommitted changes
     status = run_cmd(["git", "status", "--porcelain"])
-    if not status:
-        print("No changes to commit. Exiting.")
-        return
-
-    # Add all changes
-    print("Staging all changes...")
-    run_cmd(["git", "add", "."])
-
-    # Generate a smart commit message based on diff
-    print("Analyzing diff for smart commit message...")
-    diff = run_cmd(["git", "diff", "--cached", "--stat"])
     
-    print("\nModifications:")
-    print(diff)
-    print("\n")
-    
-    commit_msg = input("Enter a summary of these changes for the commit message: ")
-    if not commit_msg:
-        commit_msg = "Update middleware agent"
+    commit_msg = "Manual push/tag"
+    if status:
+        # Add all changes
+        print("Staging all changes...")
+        run_cmd(["git", "add", "."])
 
-    print("Committing changes...")
-    run_cmd(["git", "commit", "-m", commit_msg])
+        # Generate a smart commit message based on diff
+        print("Analyzing diff for smart commit message...")
+        diff = run_cmd(["git", "diff", "--cached", "--stat"])
+        
+        print("\nModifications:")
+        print(diff)
+        print("\n")
+        
+        commit_msg_input = input("Enter a summary of these changes for the commit message: ")
+        if commit_msg_input:
+            commit_msg = commit_msg_input
+
+        print("Committing changes...")
+        run_cmd(["git", "commit", "-m", commit_msg])
+    else:
+        print("No uncommitted changes found. Proceeding with tagging and pushing existing commits.")
 
     version = input("Enter the new version number (e.g., v1.1.0) or press Enter to skip tagging: ")
     if version:
