@@ -48,11 +48,23 @@ def main():
         
         # Compile Installer
         import os
+        import re
         iscc_path = r"C:\Users\kasey\AppData\Local\Programs\Inno Setup 6\ISCC.exe"
         installer_file = f"Hytale_Middleware_Setup_{version}.exe"
+        
         if os.path.exists(iscc_path):
-            print(f"Compiling Installer with Inno Setup...")
-            # We need to dynamically update the version in the ISS file or just leave it for now.
+            print(f"Compiling Installer with Inno Setup for version {version}...")
+            # Dynamically update the version in the ISS file
+            with open("installer.iss", "r") as f:
+                iss_content = f.read()
+            
+            clean_version = version.lstrip('v')
+            iss_content = re.sub(r"AppVersion=.*", f"AppVersion={clean_version}", iss_content)
+            iss_content = re.sub(r"OutputBaseFilename=.*", f"OutputBaseFilename=Hytale_Middleware_Setup_{version}", iss_content)
+            
+            with open("installer.iss", "w") as f:
+                f.write(iss_content)
+                
             run_cmd([iscc_path, r"installer.iss"])
         else:
             print(f"Warning: Inno Setup command line compiler (ISCC) not found at {iscc_path}. Skipping installer build.")
